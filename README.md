@@ -1,15 +1,15 @@
-# Starter kit per la pubblicazione di API interoperabili in Java
+# Starter kit per la pubblicazione di API interoperabili in Python
 
-[![CircleCI](https://circleci.com/gh/teamdigitale/api-starter-kit-java.svg?style=svg)](https://circleci.com/gh/teamdigitale/api-starter-kit-java)
+[![CircleCI](https://circleci.com/gh/teamdigitale/api-starter-kit-python.svg?style=svg)](https://circleci.com/gh/teamdigitale/api-starter-kit-python)
 [![Join the #api channel](https://img.shields.io/badge/Slack-%23api-blue.svg?logo=slack)](https://developersitalia.slack.com/messages/CDKBYTG74)
 [![Get invited](https://slack.developers.italia.it/badge.svg)](https://slack.developers.italia.it/)
 [![API on forum.italia.it](https://img.shields.io/badge/Forum-interoperabilità-blue.svg)](https://forum.italia.it/c/interoperabilita)
 
-Questo repository contiene il template di un'API interoperabile scritta in Java.
+Questo repository contiene il template di un'API interoperabile scritta in Python.
 
 ## Contenuto
 
-- Un progetto di esempio in java jax-rs
+- Un progetto di esempio in python-flask
 - Una directory `openapi` con le specifiche
 
 ## Istruzioni
@@ -18,8 +18,8 @@ Gli step per la creazione di API interoperabili sono:
 
 1. scrivere le specifiche in formato OpenAPI v3 partendo dagli esempi in `openapi`;
 
-2. scrivere o generare il codice a partire dalle specifiche. Ora i tool di swagger per Java
-   supportano correttamente OpenAPI v3.
+2. scrivere o generare il codice a partire dalle specifiche. Ora i tool di swagger per Python
+   supportano correttamente OpenAPI v3 dalla version 3.0.9.
 
 3. scrivere i metodi dell'applicazione
 
@@ -52,14 +52,14 @@ per comodità tramite il comando:
 
 Il `Makefile` contiene:
 
-  - un esempio di code generation java direttamente via openapi v3. Basta
+  - un esempio di code generation python direttamente via openapi v3. Basta
     lanciare:
 
-        make java-jaxrs
+        make python-flask
 
 Il generatore non sovrascrive i file contenuti in `.swagger-codegen-ignore`.
 
-Il .war generato viene eseguito all'interno di un container jboss
+Il server generato viene servito tramite il wsgi container di default di `connexion`.
 
 ### Dipendenze
 

@@ -33,8 +33,7 @@ jobs:
     - run: make yaml
 
     - run: |
-        cd java-jaxrs
-        mvn dependency:go-offline # gets the project dependencies
+        make python-generate
 
     - save_cache: # saves the project dependencies
         paths:
@@ -42,8 +41,8 @@ jobs:
         key: *key_cache
 
     - run: |
-        cd java-jaxrs
-        mvn package # gets the project dependencies
+        cd src
+        tox
 
 
   build:
@@ -61,8 +60,7 @@ jobs:
     - run: make yaml
 
     - run: |
-        cd java-jaxrs
-        mvn dependency:go-offline # gets the project dependencies
+        make python-generate
 
     - save_cache: # saves the project dependencies
         paths:
@@ -70,8 +68,8 @@ jobs:
         key: *key_cache
 
     - run: |
-        cd java-jaxrs
-        mvn package # gets the project dependencies
+        cd src
+        tox
 
 
 workflows:
