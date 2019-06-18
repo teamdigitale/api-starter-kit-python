@@ -1,0 +1,93 @@
+#
+# CircleCI Integration Tests.
+# Run locally with circleci local:
+#
+#   `circleci build`
+#
+# For using anchors in circle.yml see https://circleci.com/docs/2.0/writing-yaml/#anchors-and-aliases
+#
+# NOTE: As of today 2018-11 circleci local doesn't
+#       support caching.
+#
+anchors:
+- key_cache: &key_cache v1-cache-{{ checksum "java-jaxrs/pom.xml" }}
+
+version: 2
+jobs:
+  test: &base
+    # Build in the primary docker container
+    #  and connecting to the baikal server provided
+    #  by the second container.
+    docker:
+      - image: circleci/openjdk:8-jdk-browsers
+    steps:
+    - checkout
+
+    # restore the saved cache after the first run or if `pom.xml` has changed
+    # REMEMBER: cache doesn't affect local builds
+    - restore_cache:
+        key: *key_cache
+
+    - run: sudo apt -y update && sudo apt -y install tox make
+
+    - run: make yaml
+
+    - run: |
+        cd java-jaxrs
+        mvn dependency:go-offline # gets the project dependencies
+
+    - save_cache: # saves the project dependencies
+        paths:
+          - ~/.m2
+        key: *key_cache
+
+    - run: |
+        cd java-jaxrs
+        mvn package # gets the project dependencies
+
+
+  build:
+    <<: *base
+    steps:
+    - checkout
+
+    # restore the saved cache after the first run or if `pom.xml` has changed
+    # REMEMBER: cache doesn't affect local builds
+    - restore_cache:
+        key: *key_cache
+
+    - run: sudo apt -y update && sudo apt -y install tox make
+
+    - run: make yaml
+
+    - run: |
+        cd java-jaxrs
+        mvn dependency:go-offline # gets the project dependencies
+
+    - save_cache: # saves the project dependencies
+        paths:
+          - ~/.m2
+        key: *key_cache
+
+    - run: |
+        cd java-jaxrs
+        mvn package # gets the project dependencies
+
+
+workflows:
+  version: 2
+  continuous-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+  do-test:
+    jobs:
+      - test:
+          filters:
+            branches:
+              ignore:
+                - master
+
