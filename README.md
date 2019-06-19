@@ -61,6 +61,23 @@ Il generatore non sovrascrive i file contenuti in `.swagger-codegen-ignore`.
 
 Il server generato viene servito tramite il wsgi container di default di `connexion`.
 
+
+### Usare HTTPS
+
+Questa API viene erogata via https. Rispetto al codige autogenerato basta sostituire
+
+        # in Dockerfile installare le librerie necessarie a pyOpenSSL
+        FROM python:3.6-alpine
+        +RUN apk add --no-cache libffi-dev build-base openssl-dev
+        -EXPOSE 8080
+        +EXPOSE 8443
+
+        # in swagger_server/__main__.py usare un contesto autogenerato
+        #  o una coppia chiave-certificato. 
+        -app.run(port=8080)
+        +app.run(port=8443, ssl_context='adhoc')
+
+
 ### Dipendenze
 
 Per eseguire questa app servono:

@@ -10,82 +10,70 @@
 #       support caching.
 #
 anchors:
-- key_cache: &key_cache v1-cache-{{ checksum "java-jaxrs/pom.xml" }}
+- key_cache: &key_cache v1-cache-{{ checksum "python-flask/requirements.txt" }}
+- apt_cache: &apt_cache v1-apt-cache-{{ checksum ".circleci/config.yml" }}
 
 version: 2
 jobs:
-  test: &base
+  build: &base
     # Build in the primary docker container
     #  and connecting to the baikal server provided
     #  by the second container.
     docker:
       - image: circleci/openjdk:8-jdk-browsers
+    working_directory: /tmp/code
     steps:
     - checkout
-
-    # restore the saved cache after the first run or if `pom.xml` has changed
-    # REMEMBER: cache doesn't affect local builds
-    - restore_cache:
-        key: *key_cache
 
     - run: sudo apt -y update && sudo apt -y install tox make
 
     - run: make yaml
 
     - run: |
-        make python-generate
-
-    - save_cache: # saves the project dependencies
+        make python-flask-generate
+    - persist_to_workspace:
+        root: /tmp/code/
         paths:
-          - ~/.m2
-        key: *key_cache
+        - python-flask
 
-    - run: |
-        cd src
-        tox
-
-
-  build:
-    <<: *base
+  test:
+    docker:
+    - image: python:3.6
     steps:
     - checkout
+
+    - run: |
+        pip install tox
+
+    - attach_workspace:
+        at: /tmp/code/
 
     # restore the saved cache after the first run or if `pom.xml` has changed
     # REMEMBER: cache doesn't affect local builds
     - restore_cache:
         key: *key_cache
 
-    - run: sudo apt -y update && sudo apt -y install tox make
-
-    - run: make yaml
-
     - run: |
-        make python-generate
+        cd /tmp/code/python-flask
+        python --version
+        python3 --version
+        tox
 
     - save_cache: # saves the project dependencies
         paths:
-          - ~/.m2
+          - /code/python-flask/.tox
         key: *key_cache
 
-    - run: |
-        cd src
-        tox
+
+
 
 
 workflows:
   version: 2
   continuous-deploy:
     jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - master
-  do-test:
-    jobs:
+      - build
       - test:
-          filters:
-            branches:
-              ignore:
-                - master
+          requires:
+          -  build
 

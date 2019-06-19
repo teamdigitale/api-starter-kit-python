@@ -1,7 +1,0 @@
-.gradle
-.idea
-.settings
-.classpath
-*.zip
-target
-build
