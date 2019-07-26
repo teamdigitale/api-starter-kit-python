@@ -16,7 +16,7 @@ yamllint: $(YAML)
 	tox -e yamllint -- $<
 
 python-flask-generate: openapi/simple.yaml
-	wget -nc -O scripts/swagger-codegen-cli.jar https://oss.sonatype.org/content/repositories/snapshots/io/swagger/codegen/v3/swagger-codegen-cli/3.0.9-SNAPSHOT/swagger-codegen-cli-3.0.9-20190617.162503-27.jar 
+	wget -nc -O scripts/swagger-codegen-cli.jar https://repo1.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/3.0.10/swagger-codegen-cli-3.0.10.jar
 	java -jar scripts/swagger-codegen-cli.jar generate -l python-flask -i  openapi/simple.yaml -o python-flask
 
 python-flask: python-flask-generate

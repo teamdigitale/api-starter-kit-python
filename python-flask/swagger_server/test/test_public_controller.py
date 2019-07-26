@@ -23,6 +23,7 @@ class TestPublicController(BaseTestCase):
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
+        assert 'x-ratelimit-limit' in response.headers
 
     def test_get_status(self):
         """Test case for get_status
