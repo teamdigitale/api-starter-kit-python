@@ -3,8 +3,10 @@ from random import randint
 
 from connexion import problem
 from swagger_server.models.timestamps import Timestamps  # noqa: E501
+from throttling_quota import throttle
 
 
+@throttle
 def get_echo():  # noqa: E501
     """Ritorna un timestamp in formato RFC5424.
 

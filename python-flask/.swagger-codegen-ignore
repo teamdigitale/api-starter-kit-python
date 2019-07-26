@@ -15,6 +15,7 @@ README.md
 # Application files
 swagger_server/__main__.py
 swagger_server/controllers/public_controller.py
+swagger_server/test/__init__.py
 
 # You can recursively match patterns against a directory, file or extension with a double asterisk (**):
 #foo/**/qux
