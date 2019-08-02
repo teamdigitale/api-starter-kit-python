@@ -4,7 +4,7 @@ from time import time
 
 from connexion import problem
 from connexion.lifecycle import ConnexionResponse
-from flask import request, current_app as app
+from flask import request, current_app as app, after_this_request
 
 
 class ThrottlingQuota:
@@ -68,7 +68,7 @@ def throttle(wrapped):
     @wraps(wrapped)
     def tmp(*args, **kwargs):
         # Unauthenticated endpoints can throttle by IP.
-        store = app.config['quota-store']
+        store = app.config["quota-store"]
         throttle_key = kwargs.get("user") or request.remote_addr
         quota_headers = throttle_user(store, throttle_key)
         print(quota_headers)
@@ -82,25 +82,14 @@ def throttle(wrapped):
                     "X-RateLimit-Limit": quota_headers["X-RateLimit-Limit"],
                 },
             )
-        response = wrapped(*args, **kwargs)
 
-        print(response)
-
-        if isinstance(response, ConnexionResponse):
-            response.headers.update(quota_headers)
+        def add_throttling_headers(response):
+            for k, v in quota_headers.items():
+                response.headers[k] = v
             return response
 
-        if not isinstance(response, tuple):
-            return response, 200, quota_headers
-
-        if len(response) == 3:
-            response[2].update(quota_headers)
-            return response
-
-        if len(response) == 2:
-            return response + (quota_headers,)
-
-        raise NotImplementedError(response)
+        after_this_request(add_throttling_headers)
+        return wrapped(*args, **kwargs)
 
     return tmp
 

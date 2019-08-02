@@ -140,6 +140,8 @@ paths:
           #   nel Nuovo modello di interoperabilità.
           headers:
             <<: *ratelimit-headers
+            Cache-Control:
+              $ref: '#/components/headers/Cache-Control'
           content:
             application/problem+json:
               schema:
@@ -148,6 +150,9 @@ paths:
 components:
 
   headers:
+    Cache-Control:
+      schema:
+        type: string
     X-RateLimit-Limit:
       $ref: 'https://teamdigitale.github.io/openapi/0.0.5/definitions.yaml#/headers/X-RateLimit-Limit'
     X-RateLimit-Remaining:
