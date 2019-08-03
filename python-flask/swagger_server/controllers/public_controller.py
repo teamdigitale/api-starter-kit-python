@@ -4,6 +4,8 @@ from random import randint
 from connexion import problem
 from swagger_server.models.timestamps import Timestamps  # noqa: E501
 from throttling_quota import throttle
+from flask import after_this_request
+from functools import wraps
 
 
 @throttle
@@ -18,6 +20,7 @@ def get_echo():  # noqa: E501
     return Timestamps(datetime.datetime.utcnow())
 
 
+@throttle
 def get_status():  # noqa: E501
     """Ritorna lo stato dell'applicazione.
 
@@ -26,6 +29,15 @@ def get_status():  # noqa: E501
 
     :rtype: Problem
     """
+
+    @after_this_request
+    def cache_no_store(response):
+        """Add the 'no-store' cache value to avoid clients and
+           intermediaries to store this response.
+        """
+        response.headers["Cache-Control"] = "no-store"
+        return response
+
     p = randint(0, 10)
 
     if p < 7:
@@ -34,25 +46,17 @@ def get_status():  # noqa: E501
             title="Success",
             detail="Il servizio funziona correttamente",
             ext={"result": "ok"},
-            headers={"Cache-control": "no-cache"},
         )
     if p < 9:
         return problem(
             status=503,
             title="Service Unavailable",
             detail="Questo errore viene ritornato randomicamente.",
-            headers={"Retry-After": "1", "Cache-control": "no-cache"},
+            headers={"Retry-After": "1"},
         )
 
     return problem(
         status=429,
         title="Too Many Requests",
         detail="Questo errore viene ritornato randomicamente.",
-        headers={
-            "Cache-control": "no-cache",
-            "X-RateLimit-Limit": "10",
-            "X-RateLimit-Reset": "1",
-            "X-RateLimit-Remaining": "0",
-            "Retry-After": "1",
-        },
     )
