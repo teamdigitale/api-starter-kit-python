@@ -12,33 +12,7 @@
 anchors:
 - key_cache: &key_cache v1-cache-{{ checksum "python-flask/requirements.txt" }}
 - apt_cache: &apt_cache v1-apt-cache-{{ checksum ".circleci/config.yml" }}
-
-version: 2
-jobs:
-  build: &base
-    # Build in the primary docker container
-    #  and connecting to the baikal server provided
-    #  by the second container.
-    docker:
-      - image: circleci/openjdk:8-jdk-browsers
-    working_directory: /tmp/code
-    steps:
-    - checkout
-
-    - run: sudo apt -y update && sudo apt -y install tox make
-
-    - run: make yaml
-
-    - run: |
-        make python-flask-generate
-    - persist_to_workspace:
-        root: /tmp/code/
-        paths:
-        - python-flask
-
-  test:
-    docker:
-    - image: python:3.6
+- testz: &test
     steps:
     - checkout
 
@@ -64,6 +38,38 @@ jobs:
           - /code/python-flask/.tox
         key: *key_cache
 
+version: 2
+jobs:
+  build: &base
+    # Build in the primary docker container
+    #  and connecting to the baikal server provided
+    #  by the second container.
+    docker:
+      - image: circleci/openjdk:8-jdk-browsers
+    working_directory: /tmp/code
+    steps:
+    - checkout
+
+    - run: sudo apt -y update && sudo apt -y install tox make
+
+    - run: make yaml
+
+    - run: |
+        make python-flask-generate
+    - persist_to_workspace:
+        root: /tmp/code/
+        paths:
+        - python-flask
+
+
+  test36:
+    docker:
+    - image: python:3.6
+    <<: *test
+  test38:
+    docker:
+    - image: python:3.8
+    <<: *test
 
 
 
@@ -73,7 +79,10 @@ workflows:
   continuous-deploy:
     jobs:
       - build
-      - test:
+      - test36:
+          requires:
+          -  build
+      - test38:
           requires:
           -  build
 

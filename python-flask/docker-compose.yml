@@ -8,7 +8,7 @@ test:
   - .:/code:z
   working_dir: /code
   entrypoint: /bin/sh
-  command: -c 'pip install tox && tox'
+  command: -c 'pip install tox && tox -e py38'
 
 
 simple:
