@@ -31,7 +31,7 @@ anchors:
         cd /tmp/code/python-flask
         python --version
         python3 --version
-        tox
+        tox -e $PY
 
     - save_cache: # saves the project dependencies
         paths:
@@ -63,10 +63,14 @@ jobs:
 
 
   test36:
+    environment:
+      PY=py36
     docker:
     - image: python:3.6
     <<: *test
   test38:
+    environment:
+      PY=py38
     docker:
     - image: python:3.8
     <<: *test
