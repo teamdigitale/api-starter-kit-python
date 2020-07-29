@@ -1,4 +1,4 @@
-FROM python:3.6-alpine
+FROM python:3.8-alpine
 
 # Support for openssl.
 RUN apk add --no-cache libffi-dev build-base openssl-dev

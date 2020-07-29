@@ -12,6 +12,31 @@
 anchors:
 - key_cache: &key_cache v1-cache-{{ checksum "python-flask/requirements.txt" }}
 - apt_cache: &apt_cache v1-apt-cache-{{ checksum ".circleci/config.yml" }}
+- testz: &test
+    steps:
+    - checkout
+
+    - run: |
+        pip install tox
+
+    - attach_workspace:
+        at: /tmp/code/
+
+    # restore the saved cache after the first run or if `pom.xml` has changed
+    # REMEMBER: cache doesn't affect local builds
+    - restore_cache:
+        key: *key_cache
+
+    - run: |
+        cd /tmp/code/python-flask
+        python --version
+        python3 --version
+        tox -e $PY
+
+    - save_cache: # saves the project dependencies
+        paths:
+          - /code/python-flask/.tox
+        key: *key_cache
 
 version: 2
 jobs:
@@ -36,34 +61,19 @@ jobs:
         paths:
         - python-flask
 
-  test:
+
+  test36:
+    environment:
+      PY=py36
     docker:
     - image: python:3.6
-    steps:
-    - checkout
-
-    - run: |
-        pip install tox
-
-    - attach_workspace:
-        at: /tmp/code/
-
-    # restore the saved cache after the first run or if `pom.xml` has changed
-    # REMEMBER: cache doesn't affect local builds
-    - restore_cache:
-        key: *key_cache
-
-    - run: |
-        cd /tmp/code/python-flask
-        python --version
-        python3 --version
-        tox
-
-    - save_cache: # saves the project dependencies
-        paths:
-          - /code/python-flask/.tox
-        key: *key_cache
-
+    <<: *test
+  test38:
+    environment:
+      PY=py38
+    docker:
+    - image: python:3.8
+    <<: *test
 
 
 
@@ -73,7 +83,10 @@ workflows:
   continuous-deploy:
     jobs:
       - build
-      - test:
+      - test36:
+          requires:
+          -  build
+      - test38:
           requires:
           -  build
 

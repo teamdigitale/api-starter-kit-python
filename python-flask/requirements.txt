@@ -1,6 +1,7 @@
 connexion[swagger-ui]
-connexion == 2.2.0
-python_dateutil == 2.6.0
+connexion == 2.7.0
+python_dateutil == 2.8.1
 setuptools >= 21.0.0
-rfc5424-logging-handler
-pyOpenSSL
+rfc5424-logging-handler >= 1.4.3
+pyOpenSSL >= 19.1.0
+Werkzeug==0.16.1
