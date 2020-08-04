@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: OAS Lint
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -24,11 +24,9 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Spectral Linting
-      uses: stoplightio/spectral-action@v0.6.1
+    - name: API Guidelines linter - beta
+      uses: ioggstream/api-oas-checker-action@v0.6.4-italia
       with:
         # The pattern describing the file paths to lint with Spectral
         file_glob: openapi/*yaml*
-        # Custom ruleset to load in Spectral.
-        spectral_ruleset: https://teamdigitale.github.io/api-oas-checker/spectral.yml
-    
+
