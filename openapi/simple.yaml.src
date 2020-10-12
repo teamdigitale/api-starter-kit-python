@@ -146,6 +146,10 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+              example: 
+                status: 200
+                title: Ok
+                detail: "The service is working properly"
 
 components:
 
