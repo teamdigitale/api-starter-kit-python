@@ -1,16 +1,14 @@
 # This is a basic workflow to help you get started with Actions
 
-name: OAS Lint
+name: bandit security checks
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
   push:
-    branches:
-      - "*"
+    branches: [ "*" ]
   pull_request:
-    branches:
-      - "*"
+    branches: [ "*" ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -24,9 +22,9 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: API Guidelines linter - beta
-      uses: ioggstream/api-oas-checker-action@v0.6.4-italia
+    # Runs a single command using the runners shell
+    - name: Python security check using Bandit
+      uses: ioggstream/bandit-report-artifacts@0.0.1
       with:
-        # The pattern describing the file paths to lint with Spectral
-        file_glob: openapi/*yaml*
-
+        project_path: .
+ 
