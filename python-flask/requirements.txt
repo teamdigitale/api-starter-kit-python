@@ -4,4 +4,4 @@ python_dateutil == 2.8.1
 setuptools >= 21.0.0
 rfc5424-logging-handler >= 1.4.3
 pyOpenSSL >= 19.1.0
-Werkzeug==0.16.1
+Werkzeug==2.2.3
